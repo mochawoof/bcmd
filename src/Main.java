@@ -21,7 +21,7 @@ class Main {
         p.setProperty("jdk", "C:\\Program Files (x86)\\BlueJ\\jdk\\bin");
         p.setProperty("cp", "lib/*;.");
         p.setProperty("include", "*.java");
-        p.setProperty("main", "HelloWorld");
+        p.setProperty("main", "Main");
 
         try {
             FileInputStream in = new FileInputStream(".bcmd");
@@ -41,10 +41,15 @@ class Main {
             String[] commands = args[0].split("");
             for (String c : commands) {
                 ProcessBuilder pr = null;
+
                 if (c.equals("b")) {
-                    pr = new ProcessBuilder(resolve(p.g("jdk"), "javac"), "-cp", p.g("cp"), p.g("include"));
+                    pr = new ProcessBuilder(
+                        (p.g("jdk").trim().equals("") ? "javac" : resolve(p.g("jdk"), "javac")),
+                         "-cp", p.g("cp"), p.g("include"));
                 } else if (c.equals("r")) {
-                    pr = new ProcessBuilder(resolve(p.g("jdk"), "java"), "-cp", p.g("cp"), p.g("main"));
+                    pr = new ProcessBuilder(
+                        (p.g("jdk").trim().equals("") ? "java" : resolve(p.g("jdk"), "java")),
+                         "-cp", p.g("cp"), p.g("main"));
                 } else if (c.equals("c")) {
                     for (File f : new File(".").listFiles()) {
                         if (f.getName().endsWith(".class")) {
