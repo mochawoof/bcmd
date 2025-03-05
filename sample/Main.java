@@ -17,7 +17,7 @@ public class Main extends SimpleApplication {
         Main app = new Main();
 		app.setShowSettings(false);
         app.setDisplayStatView(false);
-        app.setDisplayFps(true);
+        app.setDisplayFps(false);
 
         AppSettings settings = new AppSettings(true);
     	settings.setTitle("Cube");
@@ -37,6 +37,13 @@ public class Main extends SimpleApplication {
 
         b = new Box(1.5f, 1.5f, 1.5f);
         geom = new Geometry("Box", b);
+
+        guiFont = assetManager.loadFont("Interface/Fonts/Console.fnt");
+        BitmapText toptext = new BitmapText(guiFont, false);
+        toptext.setSize(guiFont.getCharSet().getRenderedSize());
+        toptext.setText("Right click and drag to move");
+        toptext.setLocalTranslation(5, (toptext.getLineHeight() * toptext.getText().split("\n").length) + 5, 0);
+        guiNode.attachChild(toptext);
  
         Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         mat.setBoolean("UseMaterialColors", true);
@@ -49,7 +56,7 @@ public class Main extends SimpleApplication {
 
         DirectionalLight sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);
-        sun.setDirection(new Vector3f(-0.7f, -0.5f, -0.5f));
+        sun.setDirection(new Vector3f(-0f, -0.3f, -0.5f));
         rootNode.addLight(sun);
     }
 
