@@ -1,27 +1,72 @@
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.File;
+import java.util.jar.*;
 
 class Main {
     private static void help() {
-        System.out.println("Usage: java -jar bcmd.jar commands main");
-        System.out.println("Where commands is a set of commands put together (i.e. br) and main is the fully qualified name of the main class to run.");
-        System.out.println("Commands:");
-        System.out.println("b: Build project");
-        System.out.println("r: Run project");
-        System.out.println("c: Clean project");
+        System.out.println("Incorrect syntax! See manual.md for help.");
+    }
+    private static String norm(String p) {
+        return Paths.get(p).normalize().toAbsolutePath().toString();
     }
     private static String resolve(String p, String p2) {
-        return Paths.get(p).resolve(p2).normalize().toAbsolutePath().toString();
+        return Paths.get(norm(p)).resolve(norm(p2)).normalize().toAbsolutePath().toString();
     }
+    private static String relativize(String p, String p2) {
+        return Paths.get(norm(p)).relativize(Paths.get(norm(p2))).toString();
+    }
+    private static void addToJarManual(File f, byte[] bytes, JarOutputStream out) {
+        try {
+            String n = relativize(".", f.getPath());
+            if (f.isDirectory() && !n.endsWith("/")) {
+                n += "/";
+            }
+            System.out.println(n);
+            JarEntry entry = new JarEntry(n);
+            entry.setTime(f.lastModified());
+            out.putNextEntry(entry);
+            // Empty bytes array can be used to create a directory entry
+            if (bytes.length > 0) {
+                out.write(bytes);
+            }
+            out.closeEntry();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error creating jar!");
+        }
+    }
+    private static void addToJar(File f, JarOutputStream out) {
+        if (f.isFile()) {
+            String[] jarinclude = p.g("jarinclude").split(",");
+            for (String j : jarinclude) {
+                if (f.getName().endsWith(j.trim()) && !f.getName().equals("jar.jar") && !f.getName().equals("bcmd.jar")) {
+                    try {
+                        addToJarManual(f, Files.readAllBytes(Paths.get(f.getPath())), out);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.err.println("Error creating jar!");
+                    }
+                    break;
+                }
+            }
+        } else {
+            addToJarManual(f, new byte[0], out);
+            for (File fl : f.listFiles()) {
+                addToJar(fl, out);
+            }
+        }
+    }
+    private static PropertiesX p;
     public static void main(String[] args) {
-        PropertiesX p = new PropertiesX();
+        p = new PropertiesX();
 
         p.setProperty("jdk", "C:\\Program Files (x86)\\BlueJ\\jdk\\bin");
         p.setProperty("cp", "lib/*;.");
         p.setProperty("include", "*.java");
         p.setProperty("main", "Main");
+        p.setProperty("jarinclude", "class,java,jar");
 
         try {
             FileInputStream in = new FileInputStream(".bcmd");
@@ -56,6 +101,18 @@ class Main {
                             f.delete();
                         }
                     }
+                } else if (c.equals("j")) {
+                    FileOutputStream fout = new FileOutputStream("jar.jar");
+                    Manifest manifest = new Manifest();
+                    manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+                    manifest.getMainAttributes().put(new Attributes.Name("Created-By"), "BCMD");
+                    manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, p.g("main"));
+                    JarOutputStream out = new JarOutputStream(fout, manifest);
+                    //addToJarManual("META-INF/MANIFEST.MF", ("Manifest-Version: 1.0\nCreated-By: BCMD\nMain-Class: " + p.g("main")).getBytes(), out);
+                    for (File f : new File(".").listFiles()) {
+                        addToJar(f, out);
+                    }
+                    fout.close();
                 }
                 if (pr != null) {
                     try {

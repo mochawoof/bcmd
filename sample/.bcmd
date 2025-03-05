@@ -1,6 +1,7 @@
 #bcmd configuration
 #Wed Mar 05 16:26:51 EST 2025
 main=Main
-include=*.java
-cp=lib/*;.
-jdk=C\:\\Program Files (x86)\\BlueJ\\jdk\\bin
+include=Main.java
+cp=lib/*:.
+jdk=
+jarinclude=class,jar
