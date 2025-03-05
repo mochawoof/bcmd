@@ -1,0 +1,6 @@
+#bcmd configuration
+#Wed Mar 05 08:06:10 EST 2025
+main=Main
+include=*.java
+cp=lib/*;.
+jdk=C:\\Windows\\Temp\\chopper\\bluej\\jdk\\bin
