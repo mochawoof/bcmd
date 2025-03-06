@@ -1,3 +1,4 @@
+
 import java.nio.file.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -69,7 +70,7 @@ class Main {
         p.setProperty("cp", "lib/*;.");
         p.setProperty("include", "*.java");
         p.setProperty("main", "Main");
-        p.setProperty("jarinclude", "class,java,jar");
+        p.setProperty("jarinclude", "class,jar");
 
         try {
             FileInputStream in = new FileInputStream(".bcmd");
@@ -92,20 +93,24 @@ class Main {
                 ProcessBuilder pr = null;
 
                 if (c.equals("b")) {
+                    System.out.println("Building...");
                     pr = new ProcessBuilder(
                         (p.g("jdk").trim().equals("") ? "javac" : resolve(p.g("jdk"), "javac")),
                          "-cp", p.g("cp"), p.g("include"));
                 } else if (c.equals("r")) {
+                    System.out.println("Running...");
                     pr = new ProcessBuilder(
                         (p.g("jdk").trim().equals("") ? "java" : resolve(p.g("jdk"), "java")),
                          "-cp", p.g("cp"), p.g("main"));
                 } else if (c.equals("c")) {
+                    System.out.println("Cleaning...");
                     for (File f : new File(".").listFiles()) {
                         if (f.getName().endsWith(".class")) {
                             f.delete();
                         }
                     }
                 } else if (c.equals("j")) {
+                    System.out.println("Jarring...");
                     FileOutputStream fout = new FileOutputStream("jar.jar");
                     
                     Manifest manifest = new Manifest();
@@ -118,7 +123,6 @@ class Main {
                     for (File f : new File(".").listFiles()) {
                         addToJar(f, out);
                     }
-                    System.out.println("Done");
                     out.close();
                     fout.close();
                 }
@@ -132,6 +136,7 @@ class Main {
                     }
                 }
             }
+            System.out.println("Done!");
         } catch (Exception e) {
             help();
         }
