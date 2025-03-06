@@ -12,29 +12,30 @@ class Main {
         return Paths.get(p).normalize().toAbsolutePath().toString();
     }
     private static String resolve(String p, String p2) {
-        return Paths.get(norm(p)).resolve(norm(p2)).normalize().toAbsolutePath().toString();
+        return Paths.get(p).resolve(p2).normalize().toAbsolutePath().toString();
     }
     private static String relativize(String p, String p2) {
-        return Paths.get(norm(p)).relativize(Paths.get(norm(p2))).toString();
+        return Paths.get(p).relativize(Paths.get(p2)).toString();
     }
     private static void addToJarManual(File f, byte[] bytes, JarOutputStream out) {
         try {
-            String n = relativize(".", f.getPath());
+            String n = relativize(".", f.getPath()).replace("\\", "/");
             if (f.isDirectory() && !n.endsWith("/")) {
                 n += "/";
             }
-            System.out.println(n);
+            
+            System.out.println("Adding entry " + n + ", " + bytes.length + "b");
+            
             JarEntry entry = new JarEntry(n);
-            entry.setTime(f.lastModified());
             out.putNextEntry(entry);
             // Empty bytes array can be used to create a directory entry
-            if (bytes.length > 0) {
+            if (bytes.length != 0) {
                 out.write(bytes);
             }
             out.closeEntry();
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Error creating jar!");
+            System.err.println("Error creating jar entry!");
         }
     }
     private static void addToJar(File f, JarOutputStream out) {
@@ -46,7 +47,7 @@ class Main {
                         addToJarManual(f, Files.readAllBytes(Paths.get(f.getPath())), out);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        System.err.println("Error creating jar!");
+                        System.err.println("Error reading jar entry file!");
                     }
                     break;
                 }
@@ -59,7 +60,9 @@ class Main {
         }
     }
     private static PropertiesX p;
+    private static final String ver = "1.0";
     public static void main(String[] args) {
+        System.out.println("BCMD " + ver);
         p = new PropertiesX();
 
         p.setProperty("jdk", "C:\\Program Files (x86)\\BlueJ\\jdk\\bin");
@@ -78,7 +81,8 @@ class Main {
                 p.store(out, "bcmd configuration");
                 out.close();
             } catch (Exception ex) {
-                
+                ex.printStackTrace();
+                System.err.println("Error creating .bcmd file!");
             }
         }
         
@@ -103,15 +107,19 @@ class Main {
                     }
                 } else if (c.equals("j")) {
                     FileOutputStream fout = new FileOutputStream("jar.jar");
+                    
                     Manifest manifest = new Manifest();
                     manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-                    manifest.getMainAttributes().put(new Attributes.Name("Created-By"), "BCMD");
+                    manifest.getMainAttributes().put(new Attributes.Name("Created-By"), "BCMD " + ver);
                     manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, p.g("main"));
+                    
                     JarOutputStream out = new JarOutputStream(fout, manifest);
                     //addToJarManual("META-INF/MANIFEST.MF", ("Manifest-Version: 1.0\nCreated-By: BCMD\nMain-Class: " + p.g("main")).getBytes(), out);
                     for (File f : new File(".").listFiles()) {
                         addToJar(f, out);
                     }
+                    System.out.println("Done");
+                    out.close();
                     fout.close();
                 }
                 if (pr != null) {
@@ -120,6 +128,7 @@ class Main {
                         pr.start().waitFor();
                     } catch (Exception e) {
                         e.printStackTrace();
+                        System.err.println("Failed to start compiler!");
                     }
                 }
             }
