@@ -73,7 +73,7 @@ class Main {
                     System.out.println("Jarring...");
                     pr = new ProcessBuilder(
                         (jdkempty ? "jar" : resolve(p.g("jdk"), "jar")),
-                        "cvfe", "jar.jar", p.g("main") + ".class", "*"
+                        "cvfe", "jar.jar", p.g("main"), "*"
                     );
                 }
                 if (pr != null) {
