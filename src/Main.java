@@ -7,7 +7,7 @@ import java.util.jar.*;
 
 class Main {
     private static void help() {
-        System.out.println("Incorrect syntax! See manual.md for help.");
+        System.out.println("Incorrect syntax! See Manual.txt for help.");
     }
     private static String norm(String p) {
         return Paths.get(p).normalize().toAbsolutePath().toString();
@@ -19,7 +19,7 @@ class Main {
         return Paths.get(p).relativize(Paths.get(p2)).toString();
     }
     private static PropertiesX p;
-    private static final String ver = "1.0";
+    private static final String ver = "1.1";
     public static void main(String[] args) {
         System.out.println("BCMD " + ver);
         p = new PropertiesX();
@@ -37,7 +37,7 @@ class Main {
         } catch (Exception e) {
             try {
                 FileOutputStream out = new FileOutputStream(".bcmd");
-                p.store(out, "bcmd configuration");
+                p.store(out, "BCMD Configuration");
                 out.close();
             } catch (Exception ex) {
                 ex.printStackTrace();
