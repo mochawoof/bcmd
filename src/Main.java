@@ -19,7 +19,7 @@ class Main {
         return Paths.get(p).relativize(Paths.get(p2)).toString();
     }
     private static PropertiesX p;
-    private static final String ver = "1.1";
+    private static final String ver = "1.2";
     public static void main(String[] args) {
         System.out.println("BCMD " + ver);
         p = new PropertiesX();
@@ -28,7 +28,7 @@ class Main {
         p.setProperty("cp", "lib/*;.");
         p.setProperty("include", "*.java");
         p.setProperty("main", "Main");
-        p.setProperty("jarinclude", "class,jar");
+        p.setProperty("jarinclude", "*.class *.jar");
 
         try {
             FileInputStream in = new FileInputStream(".bcmd");
@@ -56,7 +56,11 @@ class Main {
                     System.out.println("Building...");
                     pr = new ProcessBuilder(
                         (jdkempty ? "javac" : resolve(p.g("jdk"), "javac")),
-                         "-cp", p.g("cp"), p.g("include"));
+                         "-cp", p.g("cp"));
+                    
+                    for (String arg : p.g("include").split(" ")) {
+                        pr.command().add(arg);
+                    }
                 } else if (c.equals("r")) {
                     System.out.println("Running...");
                     pr = new ProcessBuilder(
@@ -73,8 +77,11 @@ class Main {
                     System.out.println("Jarring...");
                     pr = new ProcessBuilder(
                         (jdkempty ? "jar" : resolve(p.g("jdk"), "jar")),
-                        "cvfe", "jar.jar", p.g("main"), "*"
+                        "cvfe", "jar.jar", p.g("main")
                     );
+                    for (String arg : p.g("jarinclude").split(" ")) {
+                        pr.command().add(arg);
+                    }
                 }
                 if (pr != null) {
                     try {
