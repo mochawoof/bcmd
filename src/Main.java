@@ -7,7 +7,7 @@ import java.util.jar.*;
 
 class Main {
     private static void help() {
-        System.out.println("Incorrect syntax! See Manual.txt for help.");
+        System.out.println("Incorrect syntax! See README.txt for help.");
     }
     private static String norm(String p) {
         return Paths.get(p).normalize().toAbsolutePath().toString();
