@@ -19,7 +19,7 @@ class Main {
         return Paths.get(p).relativize(Paths.get(p2)).toString();
     }
     private static PropertiesX p;
-    private static final String ver = "1.2";
+    private static final String ver = "1.3";
     public static void main(String[] args) {
         System.out.println("BCMD " + ver);
         p = new PropertiesX();
@@ -69,18 +69,27 @@ class Main {
                 } else if (c.equals("c")) {
                     System.out.println("Cleaning...");
                     for (File f : new File(".").listFiles()) {
-                        if (f.getName().endsWith(".class")) {
+                        if (f.getName().endsWith(".class") || f.getName().equals("temp.manifest")) {
                             f.delete();
                         }
                     }
                 } else if (c.equals("j")) {
                     System.out.println("Jarring...");
-                    pr = new ProcessBuilder(
-                        (jdkempty ? "jar" : resolve(p.g("jdk"), "jar")),
-                        "cvfe", "jar.jar", p.g("main")
-                    );
-                    for (String arg : p.g("jarinclude").split(" ")) {
-                        pr.command().add(arg);
+                    
+                    try {
+                        FileOutputStream out = new FileOutputStream("temp.manifest");
+                        out.write(("Main-Class: " + p.g("main") + "\n" + "Class-Path: " + p.g("cp")).getBytes());
+                        out.close();
+                        
+                        pr = new ProcessBuilder(
+                            (jdkempty ? "jar" : resolve(p.g("jdk"), "jar")),
+                            "cvfm", "jar.jar", "temp.manifest"
+                        );
+                        for (String arg : p.g("jarinclude").split(" ")) {
+                            pr.command().add(arg);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
                 if (pr != null) {
