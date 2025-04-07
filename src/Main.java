@@ -69,7 +69,7 @@ class Main {
                 } else if (c.equals("c")) {
                     System.out.println("Cleaning...");
                     for (File f : new File(".").listFiles()) {
-                        if (f.getName().endsWith(".class") || f.getName().equals("temp.manifest")) {
+                        if (f.getName().endsWith(".class")) {
                             f.delete();
                         }
                     }
@@ -77,13 +77,10 @@ class Main {
                     System.out.println("Jarring...");
                     
                     try {
-                        FileOutputStream out = new FileOutputStream("temp.manifest");
-                        out.write(("Main-Class: " + p.g("main") + "\n" + "Class-Path: " + p.g("cp")).getBytes());
-                        out.close();
                         
                         pr = new ProcessBuilder(
                             (jdkempty ? "jar" : resolve(p.g("jdk"), "jar")),
-                            "cvfm", "jar.jar", "temp.manifest"
+                            "cvfe", "jar.jar", p.g("main")
                         );
                         for (String arg : p.g("jarinclude").split(" ")) {
                             pr.command().add(arg);
