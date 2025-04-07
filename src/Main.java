@@ -80,7 +80,7 @@ class Main {
                         
                         pr = new ProcessBuilder(
                             (jdkempty ? "jar" : resolve(p.g("jdk"), "jar")),
-                            "cvfe", "jar.jar", p.g("main")
+                            "cvfe", new File(norm(".")).getName() + ".jar", p.g("main")
                         );
                         for (String arg : p.g("jarinclude").split(" ")) {
                             pr.command().add(arg);
