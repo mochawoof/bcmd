@@ -1,7 +1,7 @@
 IT'S EASY, WHAT?!
 IT'S POWERFUL, WHAT?!
 IT'S WRITTEN IN PURE JAVA, WHAT?!
-IT HAS SUPPORT FOR JAR LIBRARIES, WHAT?!
+IT (MOSTLY) HAS SUPPORT FOR JAR LIBRARIES, WHAT?!
 USE BCMD FOR ALL YOUR PROJECTS... AND THAT'S THE BOTTOM LINE
 
 Basic Usage:
@@ -13,7 +13,7 @@ Arguments:
 b: Build
 r: Run
 c: Clean (delete all class files)
-j: Create jar
+j: Create jar (note: Libraries are not supported yet)
 
 .bcmd File:
 BCMD uses a standard properties file to store project settings. If you don't want to deal with manually writing all the settings you can just run BCMD once and it will create the file automatically for you in the current directory.
